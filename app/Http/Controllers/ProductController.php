@@ -97,7 +97,56 @@ class ProductController extends Controller
         return response()->createdWithData($data, 'Product created.');
     }
 
-    public function update(Request $request)
+    public function update(Request $request, Product $product)
     {
+        try {
+            $validated =  $request->validate([
+                'type' => ['required', 'exists:product_types,id'],
+                'title' => ['required', 'string', 'max:255', 'min:4',  'unique:products,title,' . $product->id],
+                'description' => ['required'],
+                'price' => ['required', 'numeric'],
+                'image' => ['nullable', File::image()->max('2mb')]
+            ]);
+        } catch (ValidationException $e) {
+            return response()->invalidEntity($e->errors());
+        }
+
+        // Update image
+        if ($request->hasFile('image')) {
+            Storage::disk('public')->delete($product->image);
+            $image = $request->file('image');
+            $fileName =   now()->timestamp . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('images/products/', $fileName, 'public');
+            $product->image =  $path;
+        }
+
+
+        $product->product_type_id = $validated['type'];
+        $product->title =  $validated['title'];
+        $product->description =  $validated['description'];
+        $product->price =  $validated['price'];
+        $product->save();
+        $data = [
+            'id' => $product->id,
+            'type' => $product->type->title,
+            'description' => $product->description,
+            'price' => $product->price,
+            'image' => url(Storage::url($product->image)),
+            'created_at' => $product->created_at,
+            'updated_at' => $product->updated_at
+        ];
+        return response()->successWithData($data, 'Success update product.');
+    }
+
+    public function destroy(Product $product)
+    {
+
+        // Update image
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
+
+        $product->delete();
+        return response()->success('Success delete product.');
     }
 }
