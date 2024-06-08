@@ -21,7 +21,7 @@ class ProductFactory extends Factory
             'product_type_id' => ProductType::factory(),
             'title' => fake()->sentence(),
             'description' => fake()->text(),
-            'image' => fake()->imageUrl(),
+            'image' => 'images/products/dummy.jpg',
             'price' => rand(1000, 50000)
         ];
     }

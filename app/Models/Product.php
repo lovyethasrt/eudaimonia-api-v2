@@ -11,6 +11,7 @@ class Product extends Model
 {
     use HasFactory, HasUlids;
 
+    protected $guarded = ['id'];
     public function type():BelongsTo
     {
         return $this->belongsTo(ProductType::class, 'product_type_id');

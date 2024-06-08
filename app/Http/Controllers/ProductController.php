@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\File;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
@@ -29,7 +33,7 @@ class ProductController extends Controller
             'title' => $product->title,
             'description' => $product->description,
             'price' => $product->price,
-            'image' => $product->image,
+            'image' => url(Storage::url($product->image)),
             'created_at' => $product->created_at->toDateTimeString(),
             'updated_at' => $product->created_at->toDateTimeString()
         ]);
@@ -44,7 +48,7 @@ class ProductController extends Controller
             'title' => $product->title,
             'description' => $product->description,
             'price' => $product->price,
-            'image' => $product->image,
+            'image' => url(Storage::url($product->image)),
             'created_at' => $product->created_at->toDateTimeString(),
             'updated_at' => $product->created_at->toDateTimeString(),
             'type' => $product->type,
@@ -53,8 +57,47 @@ class ProductController extends Controller
         return response()->successWithData($data);
     }
 
+    public function create(Request $request)
+    {
+        try {
+            $validated =  $request->validate([
+                'type' => ['required', 'exists:product_types,id'],
+                'title' => ['required', 'string', 'max:255', 'min:4',  'unique:products,title'],
+                'description' => ['required'],
+                'price' => ['required', 'numeric'],
+                'image' => ['required', File::image()->max('2mb')]
+            ]);
+        } catch (ValidationException $e) {
+            return response()->invalidEntity($e->errors());
+        }
+
+        // Store image
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $fileName =   now()->timestamp . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+            $path = $image->storeAs('images/products/', $fileName, 'public');
+        }
+
+        $product =  Product::create([
+            'title' => $validated['title'],
+            'product_type_id' => $validated['type'],
+            'description' => $validated['description'],
+            'price' => $validated['price'],
+            'image' => $path
+        ]);
+        $data = [
+            'id' => $product->id,
+            'type' => $product->type->title,
+            'description' => $product->description,
+            'price' => $product->price,
+            'image' => url(Storage::url($product->image)),
+            'created_at' => $product->created_at,
+            'updated_at' => $product->updated_at
+        ];
+        return response()->createdWithData($data, 'Product created.');
+    }
+
     public function update(Request $request)
     {
-        
     }
 }
