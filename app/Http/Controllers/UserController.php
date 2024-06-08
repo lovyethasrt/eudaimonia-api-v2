@@ -32,5 +32,17 @@ class UserController extends Controller
         ]);
     }
 
+    public function profile(Request $request)
+    {
+        $user =  $request->user();
+
+        $data =  [
+            'name' => $user->name,
+            'email' => $user->email
+        ];
+
+        return response()->successWithData($data);
+    }
+
     
 }

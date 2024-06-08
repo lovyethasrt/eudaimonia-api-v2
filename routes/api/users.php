@@ -7,9 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(UserController::class)->group(function(){
     Route::post('/register', 'create')->middleware('register');
     Route::post('/login', 'login')->middleware('is.verified');
+    Route::get('/users/profile', 'profile')->middleware('auth:sanctum');
 });
 
 
-Route::get('/tes-admin', function(Request $r){
-    return 'OK';
-})->middleware(['auth:sanctum', 'abilities:products:manage']);
