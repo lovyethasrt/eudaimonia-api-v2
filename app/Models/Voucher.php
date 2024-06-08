@@ -12,4 +12,9 @@ class Voucher extends Model
     protected $guarded = [
         'id'
     ];
+
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s'
+    ];
 }
