@@ -12,4 +12,10 @@ class ProductTypeController extends Controller
         $types = ProductType::all();
         return response()->successWithData($types);
     }
+
+    public function destroy(ProductType $id)
+    {
+        $id->delete();
+        return response()->success('Product Type deleted.');
+    }
 }
