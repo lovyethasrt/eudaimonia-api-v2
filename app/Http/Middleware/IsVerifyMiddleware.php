@@ -39,8 +39,8 @@ class IsVerifyMiddleware
 
         $claims = $verifiedIdToken->claims();
         $user = User::where('email', '=', $claims->get('email'))->first();
-        $request->attributes->set('user_id', $user->id);
-        $request->attributes->set('role', $user->role);
+        $request->attributes->set('user', $user);
+        // $request->attributes->set('role', $user->role);
         return $next($request);
     }
 }

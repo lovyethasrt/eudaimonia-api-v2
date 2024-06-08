@@ -23,5 +23,14 @@ class UserController extends Controller
         return response()->success();
     }
 
+    public function login(Request $request)
+    {
+        $user =  $request->attributes->get('user');
+        $token = $user->createToken($user->email, $user->role->abilities())->plainTextToken;
+        return response()->json([
+            'token' => $token
+        ]);
+    }
+
     
 }

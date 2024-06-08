@@ -5,11 +5,12 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-// use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Enums\Roles;
 
-class User extends Model
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -22,6 +23,7 @@ class User extends Model
         'id',
         'name',
         'email',
+        'role'
     ];
 
     /**
@@ -41,5 +43,6 @@ class User extends Model
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'role' => Roles::class,
     ];
 }
