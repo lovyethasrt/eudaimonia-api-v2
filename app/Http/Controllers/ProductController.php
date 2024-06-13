@@ -33,7 +33,7 @@ class ProductController extends Controller
             'title' => $product->title,
             'description' => $product->description,
             'price' => $product->price,
-            'image' => url(Storage::url($product->image)),
+            'image' => url('images/products/'.$product->image),
             'created_at' => $product->created_at->toDateTimeString(),
             'updated_at' => $product->created_at->toDateTimeString()
         ]);
@@ -47,8 +47,8 @@ class ProductController extends Controller
             'id' => $product->id,
             'title' => $product->title,
             'description' => $product->description,
-            'price' => $product->price,
-            'image' => url(Storage::url($product->image)),
+            'price' => (double) $product->price,
+            'image' => url('images/products/'.$product->image),
             'created_at' => $product->created_at->toDateTimeString(),
             'updated_at' => $product->created_at->toDateTimeString(),
             'type' => $product->type,
@@ -75,7 +75,8 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $fileName =   now()->timestamp . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-            $path = $image->storeAs('images/products/', $fileName, 'public');
+            $directory = public_path('images/products/');
+            $image->move($directory, $fileName);
         }
 
         $product =  Product::create([
@@ -83,14 +84,14 @@ class ProductController extends Controller
             'product_type_id' => $validated['type'],
             'description' => $validated['description'],
             'price' => $validated['price'],
-            'image' => $path
+            'image' => $fileName
         ]);
         $data = [
             'id' => $product->id,
             'type' => $product->type->title,
             'description' => $product->description,
             'price' => $product->price,
-            'image' => url(Storage::url($product->image)),
+            'image' => url('images/products/'.$product->image),
             'created_at' => $product->created_at,
             'updated_at' => $product->updated_at
         ];
@@ -113,12 +114,16 @@ class ProductController extends Controller
 
         // Update image
         if ($request->hasFile('image')) {
-            Storage::disk('public')->delete($product->image);
+            if (file_exists(public_path('images/products/'.$product->image))) {
+                unlink(public_path('images/products/'.$product->image));
+            }
+            
             $image = $request->file('image');
-            $fileName =   now()->timestamp . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-            $path = $image->storeAs('images/products/', $fileName, 'public');
-            $product->image =  $path;
-        }
+            $fileName = now()->timestamp . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+            $destinationPath = public_path('images/products');
+            $image->move($destinationPath, $fileName);
+            $product->image =  $fileName;
+        }                                           
 
 
         $product->product_type_id = $validated['type'];
@@ -131,7 +136,7 @@ class ProductController extends Controller
             'type' => $product->type->title,
             'description' => $product->description,
             'price' => $product->price,
-            'image' => url(Storage::url($product->image)),
+            'image' => url('images/prouducts/'.$product->image),
             'created_at' => $product->created_at,
             'updated_at' => $product->updated_at
         ];
@@ -140,10 +145,13 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-
+        
         // Update image
         if ($product->image) {
-            Storage::disk('public')->delete($product->image);
+            if (file_exists(public_path('images/products/'.$product->image))) {
+                unlink(public_path('images/products/'.$product->image));
+            }
+            
         }
 
         $product->delete();
