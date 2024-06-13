@@ -9,4 +9,10 @@ Route::prefix('vouchers')
     Route::get('/{id}', 'show')->missing(function(){
         return response()->notFound('Voucher does not exist.');
     });
+    Route::patch('/{id}', 'update')->missing(function(){
+        return response()->notFound('Voucher does not exist.');
+    });
+    Route::delete('/{id}', 'destroy')->missing(function(){
+        return response()->notFound('Voucher does not exist.');
+    });
 });
