@@ -23,14 +23,12 @@ class ApiResponseServiceProvider extends ServiceProvider
     {
         $factory->macro('success', function ($message = null) use ($factory) {
             return $factory->json([
-                'status' => true,
                 'message' => $message ?? 'Success',
             ], 200);
         });
 
         $factory->macro('successWithData', function ($data, $message = null) use ($factory) {
             return $factory->json([
-                'status' => true,
                 'message' => $message ?? 'Success',
                 'data' => $data,
             ], 200);
@@ -38,14 +36,12 @@ class ApiResponseServiceProvider extends ServiceProvider
 
         $factory->macro('created', function ($data, $message = null) use ($factory) {
             return $factory->json([
-                'status' => true,
                 'message' => $message ?? 'Success',
             ], 201);
         });
 
         $factory->macro('createdWithData', function ($data, $message = null) use ($factory) {
             return $factory->json([
-                'status' => true,
                 'message' => $message ?? 'Success',
                 'data' => $data,
             ], 201);
@@ -53,42 +49,36 @@ class ApiResponseServiceProvider extends ServiceProvider
 
         $factory->macro('noContent', function ($message = null) use ($factory) {
             return $factory->json([
-                'status' => true,
                 'message' => $message ?? 'No Content',
             ], 204);
         });
 
         $factory->macro('badRequest', function ($message = null) use ($factory) {
             return $factory->json([
-                'status' => false,
                 'message' => $message ?? 'Bad Request',
             ], 400);
         });
 
         $factory->macro('unauthorized', function ($message = null) use ($factory) {
             return $factory->json([
-                'status' => false,
                 'message' => $message ?? 'Unauthorized',
             ], 401);
         });
 
         $factory->macro('forbidden', function ($message = null) use ($factory) {
             return $factory->json([
-                'status' => false,
                 'message' => $message ?? 'Forbidden',
             ], 403);
         });
 
         $factory->macro('notFound', function ($message = null) use ($factory) {
             return $factory->json([
-                'status' => false,
                 'message' => $message ?? 'Requested Resource Not Found',
             ], 404);
         });
 
         $factory->macro('invalidEntity', function ($errors, $message = null) use ($factory) {
             return $factory->json([
-                'status' => false,
                 'message' => $message ?? 'Invalid Input',
                 'errors' => $errors,
             ], 422);
@@ -96,7 +86,6 @@ class ApiResponseServiceProvider extends ServiceProvider
 
         $factory->macro('internalServerError', function ($message = null) use ($factory) {
             return $factory->json([
-                'status' => false,
                 'message' => $message ?? 'Internal Server Error',
             ], 500);
         });
