@@ -28,6 +28,10 @@ class UserController extends Controller
         $user =  $request->attributes->get('user');
         $token = $user->createToken($user->email, $user->role->abilities())->plainTextToken;
         return response()->json([
+            'user' => [
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
             'token' => $token
         ]);
     }
