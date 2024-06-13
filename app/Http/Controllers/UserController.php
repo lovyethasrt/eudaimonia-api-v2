@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function create(Request $request)
     {
-        if(!$request->attributes->get('id') && !$request->attributes->get('email')){
+        if (!$request->attributes->get('id') && !$request->attributes->get('email')) {
             return response()->badRequest();
         }
         User::create([
@@ -25,7 +25,7 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-        $user =  $request->attributes->get('user');
+        $user = $request->attributes->get('user');
         $token = $user->createToken($user->email, $user->role->abilities())->plainTextToken;
         return response()->json([
             'user' => [
@@ -38,9 +38,9 @@ class UserController extends Controller
 
     public function profile(Request $request)
     {
-        $user =  $request->user();
+        $user = $request->user();
 
-        $data =  [
+        $data = [
             'name' => $user->name,
             'email' => $user->email
         ];
@@ -48,5 +48,20 @@ class UserController extends Controller
         return response()->successWithData($data);
     }
 
-    
+    public function index()
+    {
+        $users = User::all();
+        $data = $users->map(fn($u) => [
+            'id' => $u->id,
+            'email' => $u->email,
+            'role' => $u->role
+        ]);
+
+        return response()->successWithData($data);
+    }
+
+    public function show(User $id)
+    {
+        return response()->successWithData($id);
+    }
 }
